@@ -35,13 +35,19 @@ const RecipePage = (props) => {
     }, [])
 
     function extractSections(text) {
-        const ingredientsIndex = text.indexOf('ingredients')
-        const directionsIndex = text.indexOf('directions')
-        const title = text.substring(7, ingredientsIndex - 1)
-        const ingredients = text.substring(ingredientsIndex + 13, directionsIndex - 1)
-        const directions = text.substring(directionsIndex + 12, text.length)
-        //console.log(title, "\n", ingredients, "\n", directions)
-        return { title: title, ingredients: ingredients, directions: directions }
+      const titleMatch = text.match(/title:\s*(.*?)(?=ingredients|$)/);
+      const ingredientsMatch = text.match(/ingredients:\s*(.*?)(?=directions|$)/);
+      const directionsMatch = text.match(/directions:\s*(.*?)(?=\s*$)/);
+    
+      if (!titleMatch || !ingredientsMatch || !directionsMatch) {
+        throw new Error("One or more sections could not be found in the text");
+      }
+    
+      const title = titleMatch[1].trim();
+      const ingredients = ingredientsMatch[1].trim();
+      const directions = directionsMatch[1].trim();
+    
+      return { title, ingredients, directions };
     }
 
     return (
